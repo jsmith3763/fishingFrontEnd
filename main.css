@@ -20,7 +20,8 @@ body {
 #fishContainer {
     display: flex;
     flex-direction: row;
-    width: 800px;
+    width: 1600px;
+    column-count: 3;
     /* flex-wrap: wrap;
     justify-content: space-around;
     align-items: center;
@@ -34,6 +35,7 @@ body {
     align-items: center;
 }
 
+
 #rightRow {
     width: 50%;
     background-color: white;
@@ -43,7 +45,20 @@ body {
 .fish-card {
     padding: 10px;
     border-style: inset;
+    min-height: 140px;
     align-items: center;
     text-align: center;
+}
+
+.fish-card img {
+    vertical-align: middle;
+    width: auto;
+    height: auto;
+    max-width: 167px;
+    max-height: 80px;
+}
+
+#learn-more {
+    vertical-align: middle;
 }
 
