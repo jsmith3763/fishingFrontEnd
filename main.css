@@ -10,3 +10,40 @@ body {
     color: rgb(47, 49, 49);
     background-color: aqua;
 }
+
+#page {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+#fishContainer {
+    display: flex;
+    flex-direction: row;
+    width: 800px;
+    /* flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    column-count: 2;
+    flex-flow: column-reverse; */
+}
+
+#leftRow {
+    width: 50%;
+    background-color: white;
+    align-items: center;
+}
+
+#rightRow {
+    width: 50%;
+    background-color: white;
+    align-items: center;
+}
+
+.fish-card {
+    padding: 10px;
+    border-style: inset;
+    align-items: center;
+    text-align: center;
+}
+
