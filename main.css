@@ -1,0 +1,12 @@
+body {
+    background-color: aqua;
+}
+
+.header {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-size: x-large;
+    color: rgb(47, 49, 49);
+    background-color: aqua;
+}
