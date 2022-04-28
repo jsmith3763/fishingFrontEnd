@@ -9,6 +9,8 @@ body {
     font-size: x-large;
     color: rgb(47, 49, 49);
     background-color: aqua;
+    border-bottom: double;
+    flex-direction: column;
 }
 
 #page {
@@ -21,12 +23,6 @@ body {
     display: flex;
     flex-direction: row;
     width: 1600px;
-    column-count: 3;
-    /* flex-wrap: wrap;
-    justify-content: space-around;
-    align-items: center;
-    column-count: 2;
-    flex-flow: column-reverse; */
 }
 
 #leftRow {
@@ -43,11 +39,14 @@ body {
 }
 
 .fish-card {
+    display: flex;
     padding: 10px;
+    justify-content: space-evenly;
     border-style: inset;
-    min-height: 140px;
+    min-height: 220px;
     align-items: center;
     text-align: center;
+    flex-direction: column;
 }
 
 .fish-card img {
@@ -58,7 +57,15 @@ body {
     max-height: 80px;
 }
 
-#learn-more {
+.learn-more {
     vertical-align: middle;
+    padding: 15px;
 }
+
+#userlist-div {
+    text-align: center;
+    background-color: antiquewhite;
+}
+
+
 
