@@ -6,11 +6,12 @@ const $searchContainer = $('<div class="search-container"></div>').appendTo($hea
 const $searchBar = $(`<input id="searchbar" type="text" name="search" placeholder="Filter fish.."></input>`).appendTo($searchContainer);
 const $page = $('<div id="page"></div>').appendTo($body);
 const $fishContainer = $('<div id="fishContainer"></div>').appendTo($page);
-const $filteredContainer = $(`<div id="filtered-list"></div>`).appendTo($page);
+const $filteredContainer = $(`<div id="fishContainer"></div>`).appendTo($page);
 const $listHeader = $(`<h1 id='list-header'>Fish You Have Caught</h1>`).appendTo($headerDiv);
 const $userListContainer = $(`<div class="userlist-div"></div>`).appendTo($page);;
 $($listHeader).hide();
 $($userListContainer).hide();
+$($filteredContainer).hide();
 
 //creating buttons
 //creating home button
@@ -32,9 +33,24 @@ $($viewList).on('click', function(e) {
     hideHomeScreen();
 })
 
+//creating search button 
 const $searchButton = $('<button id="search-button"></button>');
 $searchButton.text("Search");
 $searchButton.appendTo($searchContainer);
+
+//creating reset button to return from search
+const $resetButton = $('<button id="search-button"></button>');
+$resetButton.text("Reset");
+$resetButton.appendTo($searchContainer);
+$($resetButton).hide();
+
+//getting users search string
+let searchString = '';
+$($searchBar).on("keyup", (e) => {
+    searchString = e.target.value;
+})
+
+console.log(searchString);
 
 
 
@@ -68,16 +84,15 @@ $.get("https://www.fishwatch.gov/api/species", (data) => {
 //allows us to filter fish
 //gets info from fishwatch API and displays on page
 $($searchBar).on('click', function(e) {
-    let searchString = e.target.value;
 $.get("https://www.fishwatch.gov/api/species", (data) => {
-    console.log(data);
-        $($searchBar).on('keyup', function(e) {
-            $fishContainer.hide();
-            $filteredContainer.show();
-            searchString = e.target.value;
+    //console.log(data.length);
             for(let i = 0; i < data.length; i++) {
                 let lowercase = data[i]["Species Name"].toLowerCase();
                 $($searchButton).on('click', function(e) {
+                    $fishContainer.hide();
+                    $filteredContainer.show();
+                    $searchButton.hide();
+                    $resetButton.show();
                     if(lowercase.includes(searchString)){
                         const $filteredFishDiv = $("<div class='fish-card'></div>").appendTo($filteredContainer);
                         const $filteredh5 = $(`<h5 class="fish">${data[i]["Species Name"]}</h5>`)
@@ -92,18 +107,17 @@ $.get("https://www.fishwatch.gov/api/species", (data) => {
                             addToList($filteredFishDiv);
                         })
                     }
-                })
-                
+                })  
             }
-            if(searchString.length === 0) {
+            $($resetButton).on('click', function(e) {
+                $searchBar.empty();
                 $fishContainer.show();
+                $searchButton.show();
+                $resetButton.hide();
                 $filteredContainer.hide();
-            }
-            //console.log(searchString);
-        })
-        //console.log(searchString.length);
+                $filteredContainer.empty();
+            })
     })
-    
 });
 
 
@@ -116,6 +130,7 @@ function hideHomeScreen() {
     $($fishContainer).hide();
     $($welcomeHeader).hide();
     $($viewList).hide();
+    $($filteredContainer).hide();
     $(".add").hide();
     $(".search-container").hide();
     $(".learn-more").hide();
@@ -129,6 +144,7 @@ function hideuserListContainer() {
     $($fishContainer).show();
     $($welcomeHeader).show();
     $($viewList).show();
+    $($filteredContainer).hide();
     $(".add").show();
     $(".learn-more").show();
     $('.search-container').show();
