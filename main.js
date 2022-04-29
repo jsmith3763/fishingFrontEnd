@@ -3,7 +3,7 @@ const $body = $("body");
 const $headerDiv = $('<div class = "header"></div>').appendTo($body);
 const $welcomeHeader = $('<h1>Welcome To Fish List</h1>').appendTo($headerDiv);
 const $searchContainer = $('<div class="search-container"></div>').appendTo($headerDiv);
-const $searchBar = $(`<input id="searchbar" type="text" name="search" placeholder="Filter fish.."></input>`).appendTo($searchContainer);
+const $searchBar = $(`<input id="searchbar" type="search" name="search" placeholder="Filter fish.."></input>`).appendTo($searchContainer);
 const $page = $('<div id="page"></div>').appendTo($body);
 const $fishContainer = $('<div id="fishContainer"></div>').appendTo($page);
 const $filteredContainer = $(`<div id="fishContainer"></div>`).appendTo($page);
@@ -46,8 +46,10 @@ $($resetButton).hide();
 
 //getting users search string
 let searchString = '';
+let fish = [];
 $($searchBar).on("keyup", (e) => {
     searchString = e.target.value;
+
 })
 
 console.log(searchString);
@@ -81,42 +83,42 @@ $.get("https://www.fishwatch.gov/api/species", (data) => {
     }
 });
 
-//allows us to filter fish
-//gets info from fishwatch API and displays on page
+//allows us to filter and search fish
+//filters and displays in filteredfishDiv
 $($searchBar).on('click', function(e) {
-$.get("https://www.fishwatch.gov/api/species", (data) => {
-    //console.log(data.length);
-            for(let i = 0; i < data.length; i++) {
-                let lowercase = data[i]["Species Name"].toLowerCase();
-                $($searchButton).on('click', function(e) {
-                    $fishContainer.hide();
-                    $filteredContainer.show();
-                    $searchButton.hide();
-                    $resetButton.show();
-                    if(lowercase.includes(searchString)){
-                        const $filteredFishDiv = $("<div class='fish-card'></div>").appendTo($filteredContainer);
-                        const $filteredh5 = $(`<h5 class="fish">${data[i]["Species Name"]}</h5>`)
-                        $filteredh5.appendTo($filteredFishDiv);
-                        const $filteredImage = $(`<img class="card-image" src=${data[i]["Species Illustration Photo"].src}></ul>`);
-                        $filteredImage.appendTo($filteredFishDiv);
-                        const $filteredA = $(`<a class='learn-more' href='${`https://www.fishwatch.gov` + data[i].Path}'>Learn More</a>`)
-                        $filteredA.appendTo($filteredFishDiv);
-                        const $filteredAddButton = $('<button class="add"></button>').text("Fish Caught").appendTo($filteredFishDiv);
-                        $($filteredAddButton).on('click', function(e) {
-                            //unhide all of the other information
-                            addToList($filteredFishDiv);
-                        })
-                    }
-                })  
-            }
-            $($resetButton).on('click', function(e) {
-                $searchBar.empty();
-                $fishContainer.show();
-                $searchButton.show();
-                $resetButton.hide();
-                $filteredContainer.hide();
-                $filteredContainer.empty();
-            })
+    $.get("https://www.fishwatch.gov/api/species", (data) => {
+        //console.log(data.length);
+        for(let i = 0; i < data.length; i++) {
+            let lowercase = data[i]["Species Name"].toLowerCase();
+            $($searchButton).on('click', function(e) {
+                $fishContainer.hide();
+                $filteredContainer.show();
+                $searchButton.hide();
+                $resetButton.show();
+                if(lowercase.includes(searchString)){
+                    const $filteredFishDiv = $("<div class='fish-card'></div>").appendTo($filteredContainer);
+                    const $filteredh5 = $(`<h5 class="fish">${data[i]["Species Name"]}</h5>`)
+                    $filteredh5.appendTo($filteredFishDiv);
+                    const $filteredImage = $(`<img class="card-image" src=${data[i]["Species Illustration Photo"].src}></ul>`);
+                    $filteredImage.appendTo($filteredFishDiv);
+                    const $filteredA = $(`<a class='learn-more' href='${`https://www.fishwatch.gov` + data[i].Path}'>Learn More</a>`)
+                    $filteredA.appendTo($filteredFishDiv);
+                    const $filteredAddButton = $('<button class="add"></button>').text("Fish Caught").appendTo($filteredFishDiv);
+                    $($filteredAddButton).on('click', function(e) {
+                        //unhide all of the other information
+                        addToList($filteredFishDiv);
+                    })
+                }
+            })  
+        }
+        $($resetButton).on('click', function(e) {
+            $searchBar.empty();
+            $fishContainer.show();
+            $searchButton.show();
+            $resetButton.hide();
+            $filteredContainer.hide();
+            $filteredContainer.empty();
+        })
     })
 });
 
