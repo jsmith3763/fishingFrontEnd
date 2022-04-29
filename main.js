@@ -1,29 +1,30 @@
 //creating home page structure
 const $body = $("body");
-const $headerDiv = $('<div class = "header"></div>').appendTo($body);;
-const $welcomeHeader = $('<h1>Welcome To Fish List</>').appendTo($headerDiv);
-const $page = $('<div id="page"></div>').appendTo($body);;
-const $fishContainer = $('<div id="fishContainer"></div>').appendTo($page);;
-const $leftRow = $(`<div id="leftRow"></div>`).appendTo($fishContainer);;
-const $rightRow = $(`<div id="rightRow"></div>`).appendTo($fishContainer);;
-const $listHeader = $(`<h1 id='list-header'>Fish Caught</h1>`).appendTo($headerDiv);
-const $userList = $(`<div class="userList"></div>`).appendTo($page);;
+const $headerDiv = $('<div class = "header"></div>').appendTo($body);
+const $welcomeHeader = $('<h1>Welcome To Fish List</h1>').appendTo($headerDiv);
+const $searchContainer = $('<div class="search-container"></div>').appendTo($headerDiv);
+const $searchBar = $(`<input id="searchbar" type="text" name="search" placeholder="Filter fish.."></input>`).appendTo($searchContainer);
+const $page = $('<div id="page"></div>').appendTo($body);
+const $fishContainer = $('<div id="fishContainer"></div>').appendTo($page);
+const $filteredContainer = $(`<div id="filtered-list"></div>`).appendTo($page);
+const $listHeader = $(`<h1 id='list-header'>Fish You Have Caught</h1>`).appendTo($headerDiv);
+const $userListContainer = $(`<div class="userlist-div"></div>`).appendTo($page);;
 $($listHeader).hide();
-$($userList).hide();
+$($userListContainer).hide();
 
-
+//creating buttons
 //creating home button
-const $homeButton = $('<button class="homeButton"></button>');
+const $homeButton = $('<button id="home-button"></button>');
 $homeButton.text("Home");
-$homeButton.appendTo($headerDiv);
+$homeButton.appendTo($listHeader);
 $homeButton.hide();
 $($homeButton).on('click', function(e) {
   //unhide all of the other information
-    hideUserList();
+    hideuserListContainer();
 })
 
 //creating view list button
-const $viewList = $('<button class="viewList"></button>');
+const $viewList = $('<button id="view-list"></button>');
 $viewList.text("View List");
 $viewList.appendTo($headerDiv);
 $($viewList).on('click', function(e) {
@@ -31,20 +32,26 @@ $($viewList).on('click', function(e) {
     hideHomeScreen();
 })
 
-//determines what row to place fish card
-let counter = 0;
+const $searchButton = $('<button id="search-button"></button>');
+$searchButton.text("Search");
+$searchButton.appendTo($searchContainer);
+
+
+
 //gets info from fishwatch API and displays on page
 $.get("https://www.fishwatch.gov/api/species", (data) => {
     console.log(data);
+    $($searchBar).on('click', function(e) {
+        let searchString = e.target.value;
+        $($searchBar).on('keyup', function(e) {
+            searchString = e.target.value;
+            console.log(searchString);
+        })
+        console.log(searchString.length);
+    })
     for(let i = 0; i < data.length; i++) {
-        const $fishDiv = $("<div class='fish-card'></div>");
-        if(counter % 2 === 0) {
-            $fishDiv.appendTo($leftRow);
-        }else {
-            $fishDiv.appendTo($rightRow);
-        }
-        counter++;
-        const $h5 = $(`<h5 class="fish">${data[i]["Species Name"]}</h3>`)
+        const $fishDiv = $("<div class='fish-card'></div>").appendTo($fishContainer);
+        const $h5 = $(`<h5 class="fish">${data[i]["Species Name"]}</h5>`)
         $h5.appendTo($fishDiv);
         const $image = $(`<img class="card-image" src=${data[i]["Species Illustration Photo"].src}></ul>`);
         $image.appendTo($fishDiv);
@@ -53,11 +60,56 @@ $.get("https://www.fishwatch.gov/api/species", (data) => {
         const $addButton = $('<button class="add"></button>').text("Fish Caught").appendTo($fishDiv);
         $($addButton).on('click', function(e) {
             //unhide all of the other information
-            //hideHomeScreen();
             addToList($fishDiv);
         })
     }
 });
+
+//allows us to filter fish
+//gets info from fishwatch API and displays on page
+$($searchBar).on('click', function(e) {
+    let searchString = e.target.value;
+$.get("https://www.fishwatch.gov/api/species", (data) => {
+    console.log(data);
+        $($searchBar).on('keyup', function(e) {
+            $fishContainer.hide();
+            $filteredContainer.show();
+            searchString = e.target.value;
+            for(let i = 0; i < data.length; i++) {
+                let lowercase = data[i]["Species Name"].toLowerCase();
+                $($searchButton).on('click', function(e) {
+                    if(lowercase.includes(searchString)){
+                        const $filteredFishDiv = $("<div class='fish-card'></div>").appendTo($filteredContainer);
+                        const $filteredh5 = $(`<h5 class="fish">${data[i]["Species Name"]}</h5>`)
+                        $filteredh5.appendTo($filteredFishDiv);
+                        const $filteredImage = $(`<img class="card-image" src=${data[i]["Species Illustration Photo"].src}></ul>`);
+                        $filteredImage.appendTo($filteredFishDiv);
+                        const $filteredA = $(`<a class='learn-more' href='${`https://www.fishwatch.gov` + data[i].Path}'>Learn More</a>`)
+                        $filteredA.appendTo($filteredFishDiv);
+                        const $filteredAddButton = $('<button class="add"></button>').text("Fish Caught").appendTo($filteredFishDiv);
+                        $($filteredAddButton).on('click', function(e) {
+                            //unhide all of the other information
+                            addToList($filteredFishDiv);
+                        })
+                    }
+                })
+                
+            }
+            if(searchString.length === 0) {
+                $fishContainer.show();
+                $filteredContainer.hide();
+            }
+            //console.log(searchString);
+        })
+        //console.log(searchString.length);
+    })
+    
+});
+
+
+
+
+
 
 //hides and shows certain elements
 function hideHomeScreen() {
@@ -65,29 +117,31 @@ function hideHomeScreen() {
     $($welcomeHeader).hide();
     $($viewList).hide();
     $(".add").hide();
+    $(".search-container").hide();
     $(".learn-more").hide();
-    $('.homeButton').show();
+    $('#home-button').show();
     $($listHeader).show();
-    $($userList).show();
+    $($userListContainer).show();
 }
 
-//hides userList screen
-function hideUserList() {
+//hides userListContainer screen
+function hideuserListContainer() {
     $($fishContainer).show();
     $($welcomeHeader).show();
     $($viewList).show();
     $(".add").show();
     $(".learn-more").show();
-    $('.homeButton').hide();
+    $('.search-container').show();
+    $('#home-button').hide();
     $($listHeader).hide();
-    $($userList).hide();
+    $($userListContainer).hide();
 }
 
-//adds clicked div to userList
+//adds clicked div to userListContainer
 function addToList(element) {
     const $currentElement = element.clone();
-    $currentElement.attr('id', 'userlist-div');
-    $currentElement.appendTo($userList);
+    $currentElement.attr('id', 'userListContainer-div');
+    $currentElement.appendTo($userListContainer);
     const weight = window.prompt('Enter weight of fish:');
     const length = window.prompt('Enter length:');
     const location = window.prompt('Where did you catch it?');
